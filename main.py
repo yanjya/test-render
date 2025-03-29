@@ -2,14 +2,10 @@ import requests
 import json
 from connect.tg import send_info
 import asyncio
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
-
-token = os.getenv("TG_API_TOKEN")
-chat_id = os.getenv("TG_CHAT_ID")
-
+token = os.environ.get("TG_API_TOKEN") 
+chat_id = os.environ.get("TG_CHAT_ID")
 
 def get_my_ip():
     """
