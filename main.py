@@ -3,9 +3,16 @@ import json
 from connect.tg import send_info
 import asyncio
 import os
+import ccxt
 
-token = os.environ.get("TG_API_TOKEN") 
+b = ccxt.binanceusdm(
+
+)
+df = b.fetch_ohlcv("BTCUSDT", timeframe="1m", limit=5)
+print(df)
+token = os.environ.get("TG_API_TOKEN")
 chat_id = os.environ.get("TG_CHAT_ID")
+
 
 def get_my_ip():
     """
@@ -17,7 +24,7 @@ def get_my_ip():
         data = result.json()
         ip = str(data["ip"])
         asyncio.run(send_info(ip))
-        return ip 
+        return ip
     except requests.exceptions.RequestException as e:
         return json.dumps({"error": str(e)})
 
