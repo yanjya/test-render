@@ -1,0 +1,48 @@
+# .github/workflows/run_telegram_script_pip_cache.yml
+
+name: Run Python Script
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        id: setup-python # 給這個步驟一個 ID，方便後面引用 Python 版本
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 快取步驟：設定 pip 快取
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip # 指定要快取的 pip 下載目錄
+          # Key 設計：包含 Runner OS, Python 版本, 和 requirements.txt 的 hash
+          key: ${{ runner.os }}-pip-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          # Restore Keys：如果 requirements.txt 變了，至少還能用舊版本的快取
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ steps.setup-python.outputs.python-version }}-
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "requirements.txt not found, skipping dependency installation."
+          fi
+
+      - name: Run Python script with Telegram notification
+        env:
+          BOT_TOKEN: ${{ secrets.TG_API_TOKEN }}
+          CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: python main.py # 換成你的腳本檔名
