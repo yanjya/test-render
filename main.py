@@ -2,6 +2,14 @@ import requests
 import json
 from connect.tg import send_info
 import asyncio
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+token = os.getenv("TG_API_TOKEN")
+chat_id = os.getenv("TG_CHAT_ID")
+
 
 def get_my_ip():
     """
@@ -10,11 +18,15 @@ def get_my_ip():
     try:
         result = requests.get("https://api.ipify.org?format=json")
         result.raise_for_status()  # 檢查是否有 HTTP 錯誤
-        return json.dumps(result.json())
+        data = result.json()
+        ip = str(data["ip"])
+        asyncio.run(ip)
+        return ip 
     except requests.exceptions.RequestException as e:
         return json.dumps({"error": str(e)})
 
+
 # 範例用法
-if __name__ == '__main__':
+if __name__ == "__main__":
     ip_address_json = get_my_ip()
     print(ip_address_json)
