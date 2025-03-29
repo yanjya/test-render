@@ -20,7 +20,7 @@ def get_my_ip():
         result.raise_for_status()  # 檢查是否有 HTTP 錯誤
         data = result.json()
         ip = str(data["ip"])
-        asyncio.run(ip)
+        asyncio.run(send_info(ip))
         return ip 
     except requests.exceptions.RequestException as e:
         return json.dumps({"error": str(e)})
