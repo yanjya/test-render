@@ -1,5 +1,7 @@
 import requests
 import json
+from connect.tg import send_info
+import asyncio
 
 def get_my_ip():
     """
